@@ -1,0 +1,192 @@
+{
+  "project": "HeartGuard AI - Heart Disease Prediction",
+  "model_name": "Logistic Regression",
+  "estimator": "LogisticRegression",
+  "model_version": "1.0.0",
+  "training_date": "2026-10-08T16:52:25+05:00",
+  "feature_names": [
+    "age",
+    "sex",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "numeric_features": [
+    "age",
+    "trestbps",
+    "chol",
+    "thalach",
+    "oldpeak",
+    "ca"
+  ],
+  "nominal_features": [
+    "cp",
+    "restecg",
+    "slope",
+    "thal"
+  ],
+  "binary_features": [
+    "sex",
+    "fbs",
+    "exang"
+  ],
+  "target_name": "HeartDisease",
+  "target_definition": "HeartDisease = 1 when heart disease is present. Derived from heart.csv column 'target' (where target==1 means NO disease in this file) via HeartDisease = 1 - target.",
+  "target_labels": {
+    "0": "No heart disease (lower likelihood)",
+    "1": "Heart disease (higher likelihood)"
+  },
+  "best_params": {
+    "C": 0.31622776601683794,
+    "l1_ratio": 0.0
+  },
+  "data": {
+    "rows_in_csv": 1025,
+    "duplicate_rows_removed": 723,
+    "rows_used": 302,
+    "train_rows_for_evaluation": 241,
+    "test_rows": 61,
+    "final_model_fitted_on_rows": 302,
+    "class_balance_disease_share": 0.457
+  },
+  "metrics": {
+    "note": "Hyper-parameters were tuned and metrics measured on the 80/20 split (final model refit on all rows).",
+    "cross_validation_repeated_5fold_x3_train_set": {
+      "Accuracy": 0.8619,
+      "Precision": 0.8801,
+      "Recall": 0.8121,
+      "F1": 0.8407,
+      "ROC-AUC": 0.9181,
+      "Balanced Acc": 0.8579,
+      "ROC-AUC std": 0.0423,
+      "Train-CV AUC gap": 0.0236
+    },
+    "holdout_test_set": {
+      "Accuracy": 0.8361,
+      "Precision": 0.875,
+      "Recall": 0.75,
+      "F1": 0.8077,
+      "ROC-AUC": 0.9058,
+      "Specificity": 0.9091,
+      "TN": 30,
+      "FP": 3,
+      "FN": 7,
+      "TP": 21
+    }
+  },
+  "comparison_all_models_cv": [
+    {
+      "Model": "KNN",
+      "Accuracy": 0.841,
+      "Precision": 0.8841,
+      "Recall": 0.7545,
+      "F1": 0.8101,
+      "ROC-AUC": 0.912,
+      "Balanced Acc": 0.8339,
+      "ROC-AUC std": 0.0433,
+      "Train-CV AUC gap": 0.088
+    },
+    {
+      "Model": "Logistic Regression",
+      "Accuracy": 0.8619,
+      "Precision": 0.8801,
+      "Recall": 0.8121,
+      "F1": 0.8407,
+      "ROC-AUC": 0.9181,
+      "Balanced Acc": 0.8579,
+      "ROC-AUC std": 0.0423,
+      "Train-CV AUC gap": 0.0236
+    },
+    {
+      "Model": "Decision Tree",
+      "Accuracy": 0.8285,
+      "Precision": 0.8597,
+      "Recall": 0.7485,
+      "F1": 0.7976,
+      "ROC-AUC": 0.8572,
+      "Balanced Acc": 0.822,
+      "ROC-AUC std": 0.0726,
+      "Train-CV AUC gap": 0.066
+    },
+    {
+      "Model": "Random Forest",
+      "Accuracy": 0.8479,
+      "Precision": 0.8638,
+      "Recall": 0.797,
+      "F1": 0.8243,
+      "ROC-AUC": 0.9199,
+      "Balanced Acc": 0.8437,
+      "ROC-AUC std": 0.0393,
+      "Train-CV AUC gap": 0.042
+    },
+    {
+      "Model": "SVM",
+      "Accuracy": 0.848,
+      "Precision": 0.8991,
+      "Recall": 0.7545,
+      "F1": 0.8168,
+      "ROC-AUC": 0.9165,
+      "Balanced Acc": 0.8404,
+      "ROC-AUC std": 0.0427,
+      "Train-CV AUC gap": 0.0176
+    }
+  ],
+  "comparison_all_models_holdout": [
+    {
+      "Model": "KNN",
+      "Accuracy": 0.8197,
+      "Precision": 0.8148,
+      "Recall": 0.7857,
+      "F1": 0.8,
+      "ROC-AUC": 0.8972
+    },
+    {
+      "Model": "Logistic Regression",
+      "Accuracy": 0.8361,
+      "Precision": 0.875,
+      "Recall": 0.75,
+      "F1": 0.8077,
+      "ROC-AUC": 0.9058
+    },
+    {
+      "Model": "Decision Tree",
+      "Accuracy": 0.7705,
+      "Precision": 0.75,
+      "Recall": 0.75,
+      "F1": 0.75,
+      "ROC-AUC": 0.8512
+    },
+    {
+      "Model": "Random Forest",
+      "Accuracy": 0.7869,
+      "Precision": 0.8,
+      "Recall": 0.7143,
+      "F1": 0.7547,
+      "ROC-AUC": 0.9048
+    },
+    {
+      "Model": "SVM",
+      "Accuracy": 0.8361,
+      "Precision": 0.875,
+      "Recall": 0.75,
+      "F1": 0.8077,
+      "ROC-AUC": 0.9058
+    }
+  ],
+  "library_versions": {
+    "python": "3.13.16",
+    "scikit-learn": "1.9.1",
+    "pandas": "3.0.5",
+    "numpy": "2.5.3",
+    "joblib": "1.6.0"
+  },
+  "disclaimer": "Educational/demonstration model. Not a medical device and not a diagnostic tool."
+}

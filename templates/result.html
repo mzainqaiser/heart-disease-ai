@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Your result - HeartGuard AI{% endblock %}
+
+{% block content %}
+{% set high = result.prediction == 1 %}
+<section class="section result-section">
+  <div class="container narrow">
+    <a class="back-link" href="{{ url_for('index') }}#predict">{{ icon('back', 18) }} New assessment</a>
+
+    <div class="card result-card {{ 'is-high' if high else 'is-low' }}">
+      <div class="result-top">
+        <div class="gauge" role="img" aria-label="Estimated probability {{ result.percent }} percent">
+          <svg viewBox="0 0 200 120">
+            <path class="gauge-track" d="M20 100 A80 80 0 0 1 180 100" pathLength="100"/>
+            <path class="gauge-fill" d="M20 100 A80 80 0 0 1 180 100" pathLength="100"
+                  stroke-dasharray="100" style="--target: {{ 100 - result.percent }}"/>
+          </svg>
+          <div class="gauge-value"><strong>{{ result.percent }}%</strong><span>model probability</span></div>
+          <div class="gauge-scale"><span>Lower</span><span>Higher</span></div>
+        </div>
+        <div class="result-copy">
+          <span class="badge {{ 'badge-high' if high else 'badge-low' }}">
+            {{ icon('alert' if high else 'check', 16) }}
+            {{ 'Higher likelihood' if high else 'Lower likelihood' }}
+          </span>
+          <h1>{{ result.label }}</h1>
+          <p>
+            Based on the values you entered, the model estimates a <strong>{{ result.percent }}%</strong> probability of heart disease
+            and classifies this profile as <strong>{{ 'higher' if high else 'lower' }} likelihood</strong>.
+            This is a statistical estimate from a small educational dataset, not a diagnosis.
+          </p>
+        </div>
+      </div>
+
+      <div class="result-notice">
+        {{ icon('info', 20) }}
+        <p>This tool is for educational and demonstration purposes only. It does not provide medical diagnosis or replace advice from a qualified healthcare professional.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="group-head">
+        <span class="group-icon">{{ icon('stethoscope', 22) }}</span>
+        <div><h3>Values you entered</h3><p>Exactly what was sent to the model</p></div>
+      </div>
+      <div class="summary-grid">
+        {% for g in summary %}
+        <div class="summary-col">
+          <h4>{{ g.title }}</h4>
+          <dl>
+            {% for it in g['items'] %}
+            <div><dt>{{ it.label }}</dt><dd>{{ it.value }}</dd></div>
+            {% endfor %}
+          </dl>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="meta">Model: {{ info.name }} v{{ info.version }}</p>
+    </div>
+
+    <div class="center">
+      <a class="btn btn-primary" href="{{ url_for('index') }}#predict">{{ icon('back', 18) }} Run another assessment</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

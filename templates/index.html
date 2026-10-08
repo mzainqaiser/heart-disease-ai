@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+
+{% macro pct(v) %}{% if v is not none %}{{ '%.0f'|format(v * 100) }}%{% else %}-{% endif %}{% endmacro %}
+
+{% macro render_field(f) %}
+  {% set err = errors.get(f.name) %}
+  {% set val = values.get(f.name, '') %}
+  <div class="field{{ ' has-error' if err else '' }}{{ ' field-wide' if f.kind == 'radio' else '' }}" data-field="{{ f.name }}">
+    {% if f.kind == 'radio' %}
+      <fieldset class="radio-group">
+        <legend>{{ f.label }}</legend>
+        <div class="segmented">
+          {% for o in f.options %}
+          <label class="segment">
+            <input type="radio" name="{{ f.name }}" value="{{ o.value }}" required
+                   {{ 'checked' if val|string == o.value|string else '' }}
+                   {{ 'aria-invalid="true"' if err else '' }}>
+            <span>{{ o.label }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+    {% else %}
+      <label for="{{ f.name }}">{{ f.label }}{% if f.unit %} <span class="unit">({{ f.unit }})</span>{% endif %}</label>
+      {% if f.kind == 'number' %}
+        <input id="{{ f.name }}" name="{{ f.name }}" type="number" inputmode="decimal" required
+               min="{{ f.min }}" max="{{ f.max }}" step="{{ f.step }}" placeholder="{{ f.placeholder }}"
+               value="{{ val }}" data-integer="{{ 'true' if f.integer else 'false' }}"
+               {{ 'aria-invalid="true"' if err else '' }} aria-describedby="help-{{ f.name }} err-{{ f.name }}">
+      {% else %}
+        <select id="{{ f.name }}" name="{{ f.name }}" required
+                {{ 'aria-invalid="true"' if err else '' }} aria-describedby="help-{{ f.name }} err-{{ f.name }}">
+          <option value="" disabled {{ 'selected' if val == '' else '' }}>Select...</option>
+          {% for o in f.options %}
+          <option value="{{ o.value }}" {{ 'selected' if val|string == o.value|string else '' }}>{{ o.label }}</option>
+          {% endfor %}
+        </select>
+      {% endif %}
+    {% endif %}
+    <p class="help" id="help-{{ f.name }}">{{ f.help }}</p>
+    <p class="field-error" id="err-{{ f.name }}" role="alert">{{ err or '' }}</p>
+  </div>
+{% endmacro %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <span class="eyebrow">{{ icon('chip', 16) }} AI-powered &middot; Educational demo</span>
+      <h1>Heart disease risk estimation, <span class="grad">explained by data.</span></h1>
+      <p class="lead">HeartGuard AI runs 13 clinical measurements through a machine-learning pipeline trained on the Cleveland heart-disease dataset and returns an estimated likelihood in seconds.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#predict">Start assessment {{ icon('arrow', 18) }}</a>
+        <a class="btn btn-ghost" href="#model">How it works</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="ecg-card">
+        <svg viewBox="0 0 320 120" class="ecg">
+          <path class="ecg-line" d="M0 70 H60 L75 70 L90 25 L108 105 L124 70 H170 L182 60 L194 70 H230 L245 70 L260 30 L276 100 L290 70 H320"/>
+        </svg>
+        <div class="ecg-meta"><span class="dot"></span> Live model &middot; {{ info.name if info else 'Model' }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="container stats">
+    <div class="stat"><strong>{{ info.rows if info and info.rows else '-' }}</strong><span>unique patients in training data</span></div>
+    <div class="stat"><strong>{{ info.n_features if info and info.n_features else 13 }}</strong><span>clinical input features</span></div>
+    <div class="stat"><strong>{{ pct(info.cv_auc) if info else '-' }}</strong><span>cross-validated ROC-AUC</span></div>
+    <div class="stat"><strong>5</strong><span>algorithms compared</span></div>
+  </div>
+</section>
+
+<section class="section" id="predict">
+  <div class="container">
+    <div class="section-head">
+      <h2>Patient assessment</h2>
+      <p>Enter the values below. Every field is required; hover or read the hint under each input if you are unsure what it means.</p>
+    </div>
+
+    {% if banner %}
+    <div class="banner banner-error" role="alert">{{ icon('alert', 20) }} <span>{{ banner }}</span></div>
+    {% endif %}
+    {% if not model_ready %}
+    <div class="banner banner-error" role="alert">{{ icon('alert', 20) }} <span>The prediction service is temporarily unavailable.</span></div>
+    {% endif %}
+
+    <div class="example-bar">
+      <span>{{ icon('info', 18) }} Not sure what to enter? Fill the form with illustrative sample values:</span>
+      <div>
+        <button type="button" class="chip" data-example="example_a">Sample A</button>
+        <button type="button" class="chip" data-example="example_b">Sample B</button>
+      </div>
+    </div>
+
+    <form id="predict-form" method="post" action="{{ url_for('predict_form') }}" novalidate
+          data-examples='{{ examples|tojson|forceescape }}'>
+      {% for g in groups %}
+      <fieldset class="card group" {{ 'disabled' if not model_ready else '' }}>
+        <legend class="sr-only">{{ g.title }}</legend>
+        <div class="group-head">
+          <span class="group-icon">{{ icon(g.icon, 22) }}</span>
+          <div>
+            <h3>{{ g.title }}</h3>
+            <p>{{ g.subtitle }}</p>
+          </div>
+        </div>
+        <div class="grid">
+          {% for f in g.fields %}{{ render_field(f) }}{% endfor %}
+        </div>
+      </fieldset>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" {{ 'disabled' if not model_ready else '' }}>
+          <span class="btn-label">Analyze patient data {{ icon('arrow', 18) }}</span>
+          <span class="btn-loading" aria-hidden="true"><span class="spinner"></span> Analyzing...</span>
+        </button>
+        <button type="reset" class="btn btn-ghost" id="reset-btn">Clear form</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section section-alt" id="model">
+  <div class="container">
+    <div class="section-head">
+      <h2>About the model</h2>
+      <p>Everything below is read from the metadata saved when the model was trained, not typed in by hand.</p>
+    </div>
+    {% if info %}
+    <div class="cards-3">
+      <article class="card info-card">
+        <span class="group-icon">{{ icon('chip', 22) }}</span>
+        <h3>{{ info.name }}</h3>
+        <p>Selected from five algorithms (KNN, Logistic Regression, Decision Tree, Random Forest, SVM) using cross-validated ROC-AUC, F1, recall, balanced accuracy, stability and overfitting gap.</p>
+        <p class="meta">Version {{ info.version }} &middot; trained {{ info.trained }}</p>
+      </article>
+      <article class="card info-card">
+        <span class="group-icon">{{ icon('chart', 22) }}</span>
+        <h3>Measured performance</h3>
+        <table class="metrics">
+          <thead><tr><th></th><th>Cross-val.</th><th>Hold-out test</th></tr></thead>
+          <tbody>
+            <tr><th>ROC-AUC</th><td>{{ pct(info.cv_auc) }}</td><td>{{ pct(info.test_auc) }}</td></tr>
+            <tr><th>Accuracy</th><td>{{ pct(info.cv_accuracy) }}</td><td>{{ pct(info.test_accuracy) }}</td></tr>
+            <tr><th>Recall</th><td>{{ pct(info.cv_recall) }}</td><td>{{ pct(info.test_recall) }}</td></tr>
+            <tr><th>F1-score</th><td>{{ pct(info.cv_f1) }}</td><td>{{ pct(info.test_f1) }}</td></tr>
+          </tbody>
+        </table>
+        <p class="meta">Hold-out set is only 61 patients, so treat these figures as approximate.</p>
+      </article>
+      <article class="card info-card">
+        <span class="group-icon">{{ icon('shield', 22) }}</span>
+        <h3>Built without leakage</h3>
+        <p>Duplicate records were removed before splitting, and imputation, scaling and encoding live inside the saved pipeline, so predictions here use exactly the transformations learned in training.</p>
+      </article>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section" id="disclaimer">
+  <div class="container">
+    <div class="disclaimer">
+      {{ icon('alert', 26) }}
+      <div>
+        <h3>Medical disclaimer</h3>
+        <p>This tool is for educational and demonstration purposes only. It does not provide medical diagnosis or replace advice from a qualified healthcare professional. If you have symptoms or concerns about your heart health, contact a doctor or local emergency services.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

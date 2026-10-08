@@ -1,0 +1,8 @@
+# Everything needed to re-run the notebook and the tests locally:  pip install -r requirements-dev.txt
+-r requirements.txt
+matplotlib==3.11.2
+seaborn==0.13.2
+pytest==9.1.1
+nbconvert==7.17.1
+nbformat==5.11.1
+ipykernel==7.4.0

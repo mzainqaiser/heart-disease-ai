@@ -1,0 +1,46 @@
+{% from "_icons.html" import icon %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="HeartGuard AI - an educational machine-learning demo that estimates heart disease likelihood from clinical measurements.">
+  <meta name="theme-color" content="#0b2545">
+  <title>{% block title %}HeartGuard AI - Heart Disease Risk Prediction{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ef476f' d='M12 21l-1.4-1.3C5.4 15 2 12 2 8.4 2 5.4 4.4 3 7.4 3c1.7 0 3.4.8 4.6 2.1C13.2 3.8 14.900 3 16.600 3 19.600 3 22 5.400 22 8.400c0 3.600-3.400 6.600-8.600 11.300z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="{{ url_for('index') }}" aria-label="HeartGuard AI home">
+        <span class="brand-mark">{{ icon('heart', 20) }}</span>
+        <span class="brand-text">HeartGuard<span class="brand-ai"> AI</span></span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="{{ url_for('index') }}#predict">Predict</a>
+        <a href="{{ url_for('index') }}#model">The model</a>
+        <a href="{{ url_for('index') }}#disclaimer">Disclaimer</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>HeartGuard AI</strong>
+        <span class="muted"> - machine-learning portfolio project</span>
+      </div>
+      <p class="footer-note">For educational and demonstration purposes only. Not a medical device; not a substitute for professional medical advice.</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</body>
+</html>

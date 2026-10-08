@@ -1,0 +1,15 @@
+# Render Blueprint - lets you deploy with "New > Blueprint" straight from the GitHub repo.
+services:
+  - type: web
+    name: heartguard-ai
+    runtime: python
+    plan: free
+    # Python version comes from .python-version (3.13)
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    # Render injects $PORT; bind to 0.0.0.0 so the platform can reach the app
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 60
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"

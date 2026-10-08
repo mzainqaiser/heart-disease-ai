@@ -1,0 +1,9 @@
+# Runtime dependencies for the deployed Flask app (versions match the environment the model was trained and tested in).
+# scikit-learn is pinned exactly: a pickled pipeline should be loaded with the same version that saved it.
+Flask==3.1.3
+gunicorn==26.2.0
+scikit-learn==1.9.1
+pandas==3.0.5
+numpy==2.5.3
+scipy==1.18.1
+joblib==1.6.0
